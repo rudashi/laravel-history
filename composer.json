@@ -1,0 +1,32 @@
+{
+    "name": "rudashi/laravel-history",
+    "license": "MIT",
+    "description": "Eloquent model history for Laravel",
+    "keywords": ["model", "laravel", "eloquent", "history"],
+    "homepage": "http://github.com/rudashi/laravel-history",
+    "authors": [
+        {
+            "name": "Borys Żmuda",
+            "email": "rudashi@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.0",
+        "laravel/framework": "^6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rudashi\\LaravelHistory\\": "src/"
+        },
+        "classmap": [
+            "src/database/migrations"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rudashi\\LaravelHistory\\HistoryServiceProvider"
+            ]
+        }
+    }
+}
