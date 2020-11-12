@@ -10,7 +10,7 @@ class HistoryObserver
 
     public function created(HasHistoryInterface $model): void
     {
-        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model, ['id']));
+        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model, ['uuid', 'id']));
     }
 
     public function updated(HasHistoryInterface $model): void

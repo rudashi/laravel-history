@@ -4,6 +4,12 @@ namespace Rudashi\LaravelHistory\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Contracts\Auth\Authenticatable $user
+ * @property \Rudashi\LaravelHistory\Contracts\HasHistoryInterface $model
+ * @method \Illuminate\Database\Eloquent\Builder ofModel(string $model, string $uuid)
+ */
 class History extends Model
 {
 
@@ -34,6 +40,11 @@ class History extends Model
     public function model(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function scopeOfModel(\Illuminate\Database\Eloquent\Builder $query, string $model, string $uuid): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->where(['model_type' => $model, 'model_id' => $uuid]);
     }
 
 }
