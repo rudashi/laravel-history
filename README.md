@@ -57,10 +57,11 @@ Add `HasHistory` trait to tracked model.
 
 namespace App;
 
-use Rudashi\LaravelHistory\Traits\HasHistory;
 use Illuminate\Database\Eloquent\Model;
+use Rudashi\LaravelHistory\Traits\HasHistory;
+use Rudashi\LaravelHistory\Contracts\HasHistoryInterface;
 
-class Message extends Model
+class Message extends Model implements HasHistoryInterface
 {
     use HasHistory;
 }

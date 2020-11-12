@@ -10,23 +10,16 @@ class HistoryObserver
 
     public function created(HasHistoryInterface $model): void
     {
-        $this->saveHistory($model, __FUNCTION__);
+        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model, ['id']));
     }
 
     public function updated(HasHistoryInterface $model): void
     {
-        $changes = $model->getDirty();
-
-        if (array_key_exists(config('laravel-history.DELETED_AT'), $changes)) {
+        if (array_key_exists(config('laravel-history.DELETED_AT'), $model->getChanges())) {
             return;
         }
 
-        $changed = [];
-        foreach ($changes as $attribute => $value) {
-            $changed[] = ['key' => $attribute, 'old' => $model->getOriginal($attribute), 'new' => $value];
-        }
-
-        $this->saveHistory($model, __FUNCTION__, $changed);
+        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model));
     }
 
     public function deleted(HasHistoryInterface $model): void
@@ -50,9 +43,23 @@ class HistoryObserver
     private function saveHistory(HasHistoryInterface $model, string $action, array $meta = null): void
     {
         $model->history()->save(new History([
-                'action' => $action,
-                'meta' => $meta,
-            ] + $this->setUser()));
+            'action' => $action,
+            'meta' => $meta,
+        ] + $this->setUser()));
+    }
+
+    private function setMeta(HasHistoryInterface $model, array $exclude = []): array
+    {
+        $changed = [];
+
+        foreach ($model->getDirty() as $attribute => $value) {
+            if (in_array($attribute, $exclude, true)) {
+                continue;
+            }
+            $changed[] = ['key' => $attribute, 'old' => $model->getOriginal($attribute), 'new' => $value];
+        }
+
+        return $changed;
     }
 
 }

@@ -3,7 +3,7 @@
     "license": "MIT",
     "description": "Eloquent model history for Laravel",
     "keywords": ["model", "laravel", "eloquent", "history"],
-    "homepage": "http://github.com/rudashi/laravel-history",
+    "homepage": "https://github.com/rudashi/laravel-history",
     "authors": [
         {
             "name": "Borys Żmuda",

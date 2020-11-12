@@ -67,7 +67,8 @@ class HistoryTest extends TestCase
 
         self::assertEquals(1, $message->history->count());
         self::assertEquals('created', $history->action);
-        self::assertNull($history->meta);
+        self::assertIsArray($history->meta);
+        self::assertEquals([['key' => 'title', 'old' => null, 'new' => 'title at creating']], $history->meta);
         self::assertEquals($this->user->id, $history->user_id);
         self::assertEquals(FakeUser::class, $history->user_type);
     }
@@ -143,7 +144,7 @@ class HistoryTest extends TestCase
 
         self::assertEquals(1, $this->user->operations->count());
         self::assertEquals('created', $user_history->action);
-        self::assertNull($user_history->meta);
+        self::assertEquals([['key' => 'title', 'old' => null, 'new' => 'title at creating']], $user_history->meta);
         self::assertEquals($message->id, $user_history->model_id);
         self::assertEquals(FakeMessage::class, $user_history->model_type);
     }
