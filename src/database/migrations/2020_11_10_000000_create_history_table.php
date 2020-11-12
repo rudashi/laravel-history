@@ -9,8 +9,7 @@ class CreateHistoryTable extends Migration
     public function up() : void
     {
         try {
-
-            Schema::create('model_histories', function (Blueprint $table) {
+            Schema::create(config('laravel-history.table'), function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->timestamp('created_at')->nullable();
                 $table->uuidMorphs('model');
@@ -27,7 +26,7 @@ class CreateHistoryTable extends Migration
 
     public function down() : void
     {
-        Schema::drop('model_histories');
+        Schema::drop(config('laravel-history.table'));
     }
 
 }

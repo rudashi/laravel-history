@@ -34,7 +34,49 @@ php artisan migrate
 
 Usage
 -------------
+Add `HasOperations` trait to user model.
 
+```php
+<?php
+
+namespace App;
+
+use Rudashi\LaravelHistory\Traits\HasOperations;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class User extends Authenticatable
+{
+    use HasOperations;
+}
+```
+
+Add `HasHistory` trait to tracked model.
+
+```php
+<?php
+
+namespace App;
+
+use Rudashi\LaravelHistory\Traits\HasHistory;
+use Illuminate\Database\Eloquent\Model;
+
+class Message extends Model
+{
+    use HasHistory;
+}
+```
+
+#### Get model history relationship
+
+```php
+$model->history;
+```
+
+#### Get user operations relationship
+
+```php
+$user->operations;
+```
 
 Authors
 -------------
