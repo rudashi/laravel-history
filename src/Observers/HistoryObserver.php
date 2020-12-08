@@ -24,12 +24,12 @@ class HistoryObserver
 
     public function deleted(HasHistoryInterface $model): void
     {
-        $this->saveHistory($model, __FUNCTION__);
+        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model));
     }
 
     public function restored(HasHistoryInterface $model): void
     {
-        $this->saveHistory($model, __FUNCTION__);
+        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model));
     }
 
     private function setUser(): array
