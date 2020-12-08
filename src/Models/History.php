@@ -5,6 +5,7 @@ namespace Rudashi\LaravelHistory\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * @property string action
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Contracts\Auth\Authenticatable $user
  * @property \Rudashi\LaravelHistory\Contracts\HasHistoryInterface $model
