@@ -10,7 +10,7 @@ General System Requirements
 
 Quick Installation
 -------------
-If needed use composer to grab the library
+If necessary, use the composer to download the library
 
 ```
 $ composer require rudashi/laravel-history
@@ -69,13 +69,13 @@ class Message extends Model implements HasHistoryInterface
 
 #### Get model history relationship
 
-```php
+```
 $model->history;
 ```
 
 #### Get user operations relationship
 
-```php
+```
 $user->operations;
 ```
 
