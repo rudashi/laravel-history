@@ -10,7 +10,11 @@ class HistoryObserver
 
     public function created(HasHistoryInterface $model): void
     {
-        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model, ['uuid', 'id']));
+        $this->saveHistory(
+            $model,
+            __FUNCTION__,
+            $this->setMeta($model, array_merge($model->excludedHistoryAttributes(), ['uuid', 'id']))
+        );
     }
 
     public function updated(HasHistoryInterface $model): void
@@ -19,17 +23,17 @@ class HistoryObserver
             return;
         }
 
-        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model));
+        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model, $model->excludedHistoryAttributes()));
     }
 
     public function deleted(HasHistoryInterface $model): void
     {
-        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model));
+        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model, $model->excludedHistoryAttributes()));
     }
 
     public function restored(HasHistoryInterface $model): void
     {
-        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model));
+        $this->saveHistory($model, __FUNCTION__, $this->setMeta($model, $model->excludedHistoryAttributes()));
     }
 
     private function setUser(): array

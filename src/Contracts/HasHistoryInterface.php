@@ -11,4 +11,6 @@ interface HasHistoryInterface
 
     public function history(): \Illuminate\Database\Eloquent\Relations\MorphMany;
 
+    public function excludedHistoryAttributes(): array;
+
 }

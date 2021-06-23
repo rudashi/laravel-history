@@ -13,6 +13,13 @@ trait HasHistory
         return $this->morphMany(History::class, 'model');
     }
 
+    public function excludedHistoryAttributes(): array
+    {
+        return [
+            //
+        ];
+    }
+
     public static function bootHasHistory(): void
     {
         static::observe(HistoryObserver::class);
