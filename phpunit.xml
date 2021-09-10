@@ -15,19 +15,14 @@
             <directory suffix=".php">./tests/</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist>
-            <directory suffix=".php">src/</directory>
-        </whitelist>
-    </filter>
     <php>
-        <ini name="display_errors" value="On" />
-        <ini name="display_startup_errors" value="On" />
+        <server name="BCRYPT_ROUNDS" value="4"/>
+        <server name="MAIL_MAILER" value="array"/>
         <env name="APP_ENV" value="testing"/>
         <env name="DB_CONNECTION" value="sqlite"/>
         <env name="DB_DATABASE" value=":memory:"/>
         <env name="CACHE_DRIVER" value="array"/>
         <env name="SESSION_DRIVER" value="array"/>
-        <env name="QUEUE_DRIVER" value="sync"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
     </php>
 </phpunit>

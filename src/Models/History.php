@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property string action
+ * @property array meta
+ * @property int user_id
+ * @property string user_type
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Contracts\Auth\Authenticatable $user
  * @property \Rudashi\LaravelHistory\Contracts\HasHistoryInterface $model

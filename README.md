@@ -1,15 +1,15 @@
 Laravel History
 ================
+
 Eloquent model history for Laravel.
 
-General System Requirements
--------------
-- [PHP >7.2.0](http://php.net/)
+## General System Requirements
+
+- [PHP >7.4.0](http://php.net/)
 - [Laravel ~6.*](https://github.com/laravel/framework)
 
+## Quick Installation
 
-Quick Installation
--------------
 If necessary, use the composer to download the library
 
 ```
@@ -32,8 +32,8 @@ Finally, you'll need also to run migration
 php artisan migrate
 ```
 
-Usage
--------------
+## Usage
+
 Add `HasOperations` trait to user model.
 
 ```php
@@ -67,18 +67,18 @@ class Message extends Model implements HasHistoryInterface
 }
 ```
 
-#### Get model history relationship
+### Get model history relationship
 
 ```
 $model->history;
 ```
 
-#### Get user operations relationship
+### Get user operations relationship
 
 ```
 $user->operations;
 ```
 
-Authors
--------------
+## Authors
+
 * **Borys Zmuda** - Lead designer - [LinkedIn](https://www.linkedin.com/in/boryszmuda/), [Portfolio](https://rudashi.github.io/)
