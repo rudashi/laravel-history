@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rudashi\LaravelHistory;
 
+use Illuminate\Events\Dispatcher;
 use Illuminate\Support\ServiceProvider;
 
 class HistoryServiceProvider extends ServiceProvider
@@ -25,6 +26,20 @@ class HistoryServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/config/config.php', 'laravel-history');
+
+        foreach (array_filter($this->getListenEvents()) as $class => $listener) {
+            $this->getDispatcher()->listen($class, $listener);
+        }
+    }
+
+    private function getDispatcher(): Dispatcher
+    {
+        return $this->app['events'];
+    }
+
+    private function getListenEvents(): array
+    {
+        return $this->app['config']->get('laravel-history.events', []);
     }
 
 }

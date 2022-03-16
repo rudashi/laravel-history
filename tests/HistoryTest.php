@@ -2,15 +2,19 @@
 
 namespace Rudashi\LaravelHistory\Tests;
 
+use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Rudashi\LaravelHistory\Contracts\HasHistoryInterface;
 use Rudashi\LaravelHistory\HistoryServiceProvider;
+use Rudashi\LaravelHistory\Listeners\AuthenticationListeners;
 use Rudashi\LaravelHistory\Models\History;
 use Rudashi\LaravelHistory\Traits\HasHistory;
 use Tests\CreatesApplication;
@@ -266,6 +270,46 @@ class HistoryTest extends TestCase
         self::assertEquals('updated', $history->get(1)->action);
         self::assertEquals($this->user->getAttribute('id'), $history->get(0)->user_id);
         self::assertEquals($this->user->getAttribute('id'), $history->get(1)->user_id);
+    }
+
+    public function test_can_register_authentication_event(): void
+    {
+        Event::fake();
+
+        Auth::login($this->user);
+
+        Event::assertListening(Login::class, AuthenticationListeners::class);
+        Event::assertDispatched(Login::class);
+    }
+
+    public function test_can_register_login_event(): void
+    {
+        Auth::login($this->user);
+
+        $history = History::ofUser($this->user);
+        $login = $history->get(0);
+
+        self::assertCount(1, $history);
+        self::assertEquals('Login', $login->action);
+        self::assertIsArray($login->meta);
+        self::assertCount(0, $login->meta);
+        self::assertNull($login->model_id);
+        self::assertNull($login->model_type);
+    }
+
+    public function test_can_register_logout_event(): void
+    {
+        Auth::logout();
+
+        $history = History::ofUser($this->user);
+        $login = $history->get(0);
+
+        self::assertCount(1, $history);
+        self::assertEquals('Logout', $login->action);
+        self::assertIsArray($login->meta);
+        self::assertCount(0, $login->meta);
+        self::assertNull($login->model_id);
+        self::assertNull($login->model_type);
     }
 
     private function createAndRemoveModel(string $class = MessageSoftDelete::class): Message|MessageSoftDelete

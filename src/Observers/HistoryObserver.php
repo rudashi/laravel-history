@@ -46,7 +46,7 @@ class HistoryObserver
 
     private function saveHistory($model, string $action, array $meta = null): void
     {
-        $this->history->fill(['action' => $action, 'meta' => $meta,])
+        $this->history->fill(['action' => $action, 'meta' => $meta])
             ->model()->associate($model)
             ->user()->associate($this->auth->user())
             ->save();
