@@ -1,12 +1,16 @@
+<p style="text-align: center"><img src="./art/logo-mock.svg" width="400" alt=""></p>
+
 Laravel History
 ================
 
 Eloquent model history for Laravel.
 
+Package provides easy to use functions to log the activities of the users of your app. It can also log model events.
+
 ## General System Requirements
 
-- [PHP >7.4.0](http://php.net/)
-- [Laravel ~6.*](https://github.com/laravel/framework)
+- [PHP ^8.0](http://php.net/)
+- [Laravel ^9.0](https://github.com/laravel/framework)
 
 ## Quick Installation
 
@@ -28,7 +32,7 @@ Remember to put repository in a composer.json
 ```
 
 Finally, you'll need also to run migration
-```
+```bash
 php artisan migrate
 ```
 
@@ -69,14 +73,17 @@ class Message extends Model implements HasHistoryInterface
 
 ### Get model history relationship
 
-```
+```php
 $model->history;
+History::ofModel($model);
+History::ofModel(Model::class, 1);
 ```
-
 ### Get user operations relationship
 
-```
+```php
 $user->operations;
+History::ofUser($user);
+History::ofUser(User::class, 1);
 ```
 
 ## Authors
