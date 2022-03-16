@@ -1,4 +1,4 @@
-<p style="text-align: center"><img src="./art/logo-mock.svg" width="400" alt=""></p>
+<p align="center"><img src="./art/logo-mock.svg" width="400" alt=""></p>
 
 Laravel History
 ================
