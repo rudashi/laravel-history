@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreateHistoryTable extends Migration
-{
+return new class extends Migration {
 
-    public function up() : void
+    public function up(): void
     {
         try {
-            Schema::create(config('laravel-history.table'), function (Blueprint $table) {
+            Schema::create(config('laravel-history.table'), static function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->timestamp('created_at')->nullable();
                 $table->uuidMorphs('model');
@@ -18,15 +20,15 @@ class CreateHistoryTable extends Migration
                 $table->text('meta')->nullable();
             });
 
-        } catch (PDOException $ex) {
+        } catch (RuntimeException $exception) {
             $this->down();
-            throw $ex;
+            throw $exception;
         }
     }
 
-    public function down() : void
+    public function down(): void
     {
         Schema::drop(config('laravel-history.table'));
     }
 
-}
+};

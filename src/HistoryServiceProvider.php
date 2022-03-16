@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rudashi\LaravelHistory;
 
 use Illuminate\Support\ServiceProvider;
