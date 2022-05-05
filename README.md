@@ -16,7 +16,7 @@ Package provides easy to use functions to log the activities of the users of you
 
 If necessary, use the composer to download the library
 
-```
+```bash
 $ composer require rudashi/laravel-history
 ```
 
