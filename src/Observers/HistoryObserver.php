@@ -10,11 +10,11 @@ use Rudashi\LaravelHistory\Models\History;
 
 class HistoryObserver
 {
-
     public function __construct(
-        private History $history,
-        private Guard $auth
-    ) {}
+        private readonly History $history,
+        private readonly Guard $auth
+    ) {
+    }
 
     public function created(HasHistoryInterface $model): void
     {
@@ -66,5 +66,4 @@ class HistoryObserver
 
         return $changed;
     }
-
 }

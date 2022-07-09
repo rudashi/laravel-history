@@ -9,13 +9,12 @@ use Illuminate\Support\ServiceProvider;
 
 class HistoryServiceProvider extends ServiceProvider
 {
-
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
         $this->publishes([
-            __DIR__.'/database/migrations' => database_path('migrations'),
+            __DIR__ . '/database/migrations' => database_path('migrations'),
         ], 'migrations');
 
         $this->publishes([
@@ -41,5 +40,4 @@ class HistoryServiceProvider extends ServiceProvider
     {
         return $this->app['config']->get('laravel-history.events', []);
     }
-
 }

@@ -13,7 +13,6 @@ use Rudashi\LaravelHistory\Models\History;
  */
 interface HasHistoryInterface
 {
-
     public function disableHistory();
 
     public function history(): MorphMany;
@@ -21,5 +20,4 @@ interface HasHistoryInterface
     public function excludedHistoryAttributes(): array;
 
     public function excludedHistoryModelEvents(): array;
-
 }

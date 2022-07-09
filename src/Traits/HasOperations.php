@@ -13,10 +13,8 @@ use Rudashi\LaravelHistory\Models\History;
  */
 trait HasOperations
 {
-
     public function operations(): MorphMany
     {
         return $this->morphMany(History::class, 'user');
     }
-
 }

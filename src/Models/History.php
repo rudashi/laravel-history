@@ -17,7 +17,6 @@ use Rudashi\LaravelHistory\Models\Contracts\HistoryInterface;
  */
 class History extends Model implements HistoryInterface
 {
-
     public function __construct(array $attributes = [])
     {
         $this->setTable(config('laravel-history.table'));
@@ -27,7 +26,7 @@ class History extends Model implements HistoryInterface
             'meta',
         ]);
         $this->mergeCasts([
-            'meta' => 'json'
+            'meta' => 'json',
         ]);
 
         parent::__construct($attributes);
@@ -35,12 +34,12 @@ class History extends Model implements HistoryInterface
 
     public static function ofModel(Model|string $type, mixed $value = null, string $foreignKey = 'id'): Collection
     {
-        return (new static)->ofMorph('model', $type, $value, $foreignKey);
+        return (new static())->ofMorph('model', $type, $value, $foreignKey);
     }
 
     public static function ofUser(Model|string $type, mixed $value = null, string $foreignKey = 'id'): Collection
     {
-        return (new static)->ofMorph('user', $type, $value, $foreignKey);
+        return (new static())->ofMorph('user', $type, $value, $foreignKey);
     }
 
     public function model(): MorphTo
@@ -60,7 +59,7 @@ class History extends Model implements HistoryInterface
             $value = $type->getKey();
             $type = $type->getMorphClass();
         }
+
         return static::query()->whereMorphRelation($relation, $type, $foreignKey, $value)->get();
     }
-
 }

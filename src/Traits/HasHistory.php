@@ -10,7 +10,6 @@ use Rudashi\LaravelHistory\Observers\HistoryObserver;
 
 trait HasHistory
 {
-
     public static function bootHasHistory(): void
     {
         static::observe(HistoryObserver::class);
@@ -19,7 +18,7 @@ trait HasHistory
     public function initializeHasHistory(): void
     {
         foreach ($this->excludedHistoryModelEvents() as $event) {
-            $this::getEventDispatcher()->forget("eloquent.{$event}: ".$this::class);
+            $this::getEventDispatcher()->forget("eloquent.$event: " . $this::class);
         }
     }
 
@@ -48,5 +47,4 @@ trait HasHistory
             //
         ];
     }
-
 }
