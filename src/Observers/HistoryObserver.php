@@ -18,11 +18,7 @@ class HistoryObserver
 
     public function created(HasHistoryInterface $model): void
     {
-        $this->saveHistory(
-            $model,
-            __FUNCTION__,
-            $this->setMeta($model, array_merge($model->excludedHistoryAttributes(), ['uuid', 'id']))
-        );
+        $this->saveHistory($model,__FUNCTION__, $this->setMeta($model, [...$model->excludedHistoryAttributes(), 'uuid', 'id']));
     }
 
     public function deleted(HasHistoryInterface $model): void
