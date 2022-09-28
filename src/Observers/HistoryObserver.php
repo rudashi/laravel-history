@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rudashi\LaravelHistory\Observers;
 
 use Illuminate\Contracts\Auth\Guard;
+use JsonException;
 use Rudashi\LaravelHistory\Contracts\HasHistoryInterface;
 use Rudashi\LaravelHistory\Models\History;
 
@@ -57,9 +58,25 @@ class HistoryObserver
             if (in_array($attribute, $exclude, true)) {
                 continue;
             }
-            $changed[] = ['key' => $attribute, 'old' => $model->getOriginal($attribute), 'new' => $value];
+            $changed[] = [
+                'key' => $attribute,
+                'old' => $this->castAttribute($model->getRawOriginal($attribute)),
+                'new' => $this->castAttribute($value),
+            ];
         }
 
         return $changed;
+    }
+
+    private function castAttribute(mixed $attribute = null)
+    {
+        if (! is_string($attribute)) {
+            return $attribute;
+        }
+        try {
+            return json_decode($attribute, false, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            return $attribute;
+        }
     }
 }
