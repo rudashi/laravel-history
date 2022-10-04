@@ -15,13 +15,6 @@ trait HasHistory
         static::observe(HistoryObserver::class);
     }
 
-    public function initializeHasHistory(): void
-    {
-        foreach ($this->excludedHistoryModelEvents() as $event) {
-            $this::getEventDispatcher()->forget("eloquent.$event: " . $this::class);
-        }
-    }
-
     public function disableHistory(): self
     {
         $this::flushEventListeners();
