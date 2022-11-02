@@ -7,7 +7,7 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
@@ -22,7 +22,7 @@ use Tests\CreatesApplication;
 class HistoryTest extends TestCase
 {
     use CreatesApplication;
-    use RefreshDatabase;
+    use LazilyRefreshDatabase;
 
     private FakeUser $user;
 
