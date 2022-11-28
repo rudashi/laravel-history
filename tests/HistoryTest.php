@@ -243,7 +243,7 @@ class HistoryTest extends TestCase
 
     public function test_user_has_no_registered_history_actions(): void
     {
-        self::assertEquals(0, $this->user->operations->count());
+        self::assertEquals(0, $this->createUser()->operations->count());
     }
 
     public function test_get_model_history(): void
@@ -276,7 +276,7 @@ class HistoryTest extends TestCase
     {
         Event::fake();
 
-        Auth::login($this->user);
+        Auth::login($this->createUser());
 
         Event::assertListening(Login::class, AuthenticationListeners::class);
         Event::assertDispatched(Login::class);
@@ -284,6 +284,8 @@ class HistoryTest extends TestCase
 
     public function test_can_register_login_event(): void
     {
+        $this->user = $this->createUser();
+
         Auth::login($this->user);
 
         $history = History::ofUser($this->user);
@@ -299,6 +301,8 @@ class HistoryTest extends TestCase
 
     public function test_can_register_logout_event(): void
     {
+        $this->user = $this->createUser();
+        $this->actingAs($this->user);
         Auth::logout();
 
         $history = History::ofUser($this->user);
