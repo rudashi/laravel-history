@@ -32,7 +32,7 @@ class HistoryTest extends TestCase
 
         $this->artisan('migrate', [
             '--path' => __DIR__ . '/../src/database/migrations/',
-            '--realpath' => __DIR__ . '/../src/database/migrations/'
+            '--realpath' => __DIR__ . '/../src/database/migrations/',
         ])->run();
 
         Schema::create('users', static function (Blueprint $table) {
@@ -165,7 +165,7 @@ class HistoryTest extends TestCase
     {
         $message = $this->createModel();
         $message->update([
-            'title' => 'updating title'
+            'title' => 'updating title',
         ]);
         $message->refresh();
 
@@ -186,7 +186,7 @@ class HistoryTest extends TestCase
         $message = $this->createModel(MessageWithoutTitle::class);
         $message->update([
             'title' => 'updating title',
-            'description' => 'updating desc'
+            'description' => 'updating desc',
         ]);
         $message->refresh();
 
@@ -212,7 +212,7 @@ class HistoryTest extends TestCase
     {
         $message = $this->createModel(MessageWithoutEvent::class);
         $message->update([
-            'description' => 'updating desc'
+            'description' => 'updating desc',
         ]);
         $message->refresh();
 
@@ -329,8 +329,8 @@ class HistoryTest extends TestCase
 
     private function createModel(string $class = MessageSoftDelete::class): Message
     {
-        return (new $class)->query()->create([
-            'title' => 'title at creating'
+        return (new $class())->query()->create([
+            'title' => 'title at creating',
         ]);
     }
 
@@ -338,7 +338,6 @@ class HistoryTest extends TestCase
     {
         return FakeUser::query()->create(['name' => 'Monica', 'password' => 'secret']);
     }
-
 }
 
 class Message extends Model implements HasHistoryInterface
@@ -359,16 +358,14 @@ class MessageWithoutTitle extends Message
 {
     public function excludedHistoryAttributes(): array
     {
-        return [ 'title' ];
+        return ['title'];
     }
-
 }
 
 class MessageWithoutEvent extends Message
 {
     public function excludedHistoryModelEvents(): array
     {
-        return [ 'created' ];
+        return ['created'];
     }
-
 }
