@@ -12,5 +12,4 @@ class FakeUser extends User
     public $timestamps = false;
     protected $guarded = [];
     protected $table = 'users';
-
 }
