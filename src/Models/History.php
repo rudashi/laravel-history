@@ -17,7 +17,6 @@ use Rudashi\LaravelHistory\Models\Contracts\HistoryInterface;
  * @property array meta
  * @property int user_id
  * @property string user_type
- *
  * @property User user
  * @property Model model
  */
