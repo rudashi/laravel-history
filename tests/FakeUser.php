@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Rudashi\LaravelHistory\Tests;
 
 use Illuminate\Foundation\Auth\User;

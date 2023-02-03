@@ -6,8 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
-
+return new class () extends Migration {
     public function up(): void
     {
         try {
@@ -19,7 +18,6 @@ return new class extends Migration {
                 $table->string('action');
                 $table->text('meta')->nullable();
             });
-
         } catch (RuntimeException $exception) {
             $this->down();
             throw $exception;
@@ -30,5 +28,4 @@ return new class extends Migration {
     {
         Schema::drop(config('laravel-history.table'));
     }
-
 };
