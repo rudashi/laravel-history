@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Rudashi\LaravelHistory\Models\Contracts\HistoryInterface;
 
 /**
@@ -47,14 +48,20 @@ class History extends Model implements HistoryInterface
         return (new static())->ofMorph('user', $type, $value, $foreignKey);
     }
 
-    public function model(): MorphTo
+    public function model(string $ownerKey = 'id'): MorphTo
     {
-        return $this->morphTo(__FUNCTION__);
+        return $this->morphTo(
+            name: __FUNCTION__,
+            ownerKey: $ownerKey
+        );
     }
 
-    public function user(): MorphTo
+    public function user(string $ownerKey = 'id'): MorphTo
     {
-        return $this->morphTo(__FUNCTION__);
+        return $this->morphTo(
+            name: __FUNCTION__,
+            ownerKey: $ownerKey
+        );
     }
 
     private function ofMorph(string $relation, Model|string $type, mixed $value = null, string $foreignKey = 'id'): Collection
@@ -65,6 +72,12 @@ class History extends Model implements HistoryInterface
             $type = $type->getMorphClass();
         }
 
-        return static::query()->whereMorphRelation($relation, $type, $foreignKey, $value)->latest()->get();
+        return static::query()->whereMorphRelation(
+            relation: Relation::noConstraints(fn () => $this->{$relation}($foreignKey)),
+            types: $type,
+            column: $foreignKey,
+            operator: '=',
+            value: $value
+        )->latest()->get();
     }
 }
