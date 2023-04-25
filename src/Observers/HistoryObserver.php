@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rudashi\LaravelHistory\Observers;
 
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Database\Eloquent\Model;
 use JsonException;
 use Rudashi\LaravelHistory\Contracts\HasHistoryInterface;
 use Rudashi\LaravelHistory\Models\History;
@@ -45,12 +46,12 @@ class HistoryObserver
         $this->saveHistory($model, __FUNCTION__, $this->setMeta($model));
     }
 
-    private function saveHistory($model, string $action, array $meta = null): void
+    private function saveHistory(HasHistoryInterface|Model $model, string $action, array $meta = null): void
     {
         if (in_array($action, $model->excludedHistoryModelEvents(), true) === false) {
             $this->history->fill(['action' => $action, 'meta' => $meta])
-                ->model()->associate($model)
-                ->user()->associate($this->auth->user())
+                ->model($model->getLocalKeyName())->associate($model)
+                ->user($model->getLocalKeyName())->associate($this->auth->user())
                 ->save();
         }
     }

@@ -24,7 +24,16 @@ trait HasHistory
 
     public function history(): MorphMany
     {
-        return $this->morphMany(History::class, 'model');
+        return $this->morphMany(
+            related: History::class,
+            name: 'model',
+            localKey: $this->getLocalKeyName()
+        );
+    }
+
+    public function getLocalKeyName(): string
+    {
+        return $this->getKeyName();
     }
 
     public function excludedHistoryAttributes(): array

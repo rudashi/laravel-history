@@ -17,6 +17,8 @@ interface HasHistoryInterface
 
     public function history(): MorphMany;
 
+    public function getLocalKeyName(): string;
+
     public function excludedHistoryAttributes(): array;
 
     public function excludedHistoryModelEvents(): array;
