@@ -49,9 +49,10 @@ class HistoryObserver
     private function saveHistory(HasHistoryInterface|Model $model, string $action, array $meta = null): void
     {
         if (in_array($action, $model->excludedHistoryModelEvents(), true) === false) {
-            $this->history->fill(['action' => $action, 'meta' => $meta])
-                ->model($model->getLocalKeyName())->associate($model)
-                ->user($model->getLocalKeyName())->associate($this->auth->user())
+            $this->history->setCustomOwnerKey($model->getLocalKeyName())
+                ->fill(['action' => $action, 'meta' => $meta])
+                ->model()->associate($model)
+                ->user()->associate($this->auth->user())
                 ->save();
         }
     }

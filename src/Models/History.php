@@ -23,6 +23,8 @@ use Rudashi\LaravelHistory\Models\Contracts\HistoryInterface;
  */
 class History extends Model implements HistoryInterface
 {
+    public static string $customOwnerKey = 'id';
+
     public function __construct(array $attributes = [])
     {
         $this->setTable(config('laravel-history.table'));
@@ -40,42 +42,52 @@ class History extends Model implements HistoryInterface
 
     public static function ofModel(Model|string $type, mixed $value = null, string $foreignKey = 'id'): Collection
     {
-        return (new static())->ofMorph('model', $type, $value, $foreignKey);
+        static::$customOwnerKey = $foreignKey;
+
+        return (new static())->ofMorph('model', $type, $value);
     }
 
     public static function ofUser(Model|string $type, mixed $value = null, string $foreignKey = 'id'): Collection
     {
-        return (new static())->ofMorph('user', $type, $value, $foreignKey);
+        static::$customOwnerKey = $foreignKey;
+
+        return (new static())->ofMorph('user', $type, $value);
     }
 
-    public function model(string $ownerKey = 'id'): MorphTo
+    public function setCustomOwnerKey(string $customOwnerKey): static
+    {
+        static::$customOwnerKey = $customOwnerKey;
+
+        return $this;
+    }
+
+    public function model(): MorphTo
     {
         return $this->morphTo(
             name: __FUNCTION__,
-            ownerKey: $ownerKey
+            ownerKey: static::$customOwnerKey
         );
     }
 
-    public function user(string $ownerKey = 'id'): MorphTo
+    public function user(): MorphTo
     {
         return $this->morphTo(
             name: __FUNCTION__,
-            ownerKey: $ownerKey
+            ownerKey: static::$customOwnerKey
         );
     }
 
-    private function ofMorph(string $relation, Model|string $type, mixed $value = null, string $foreignKey = 'id'): Collection
+    private function ofMorph(string $relation, Model|string $type, mixed $value = null): Collection
     {
         if ($type instanceof Model) {
-            $foreignKey = $type->getKeyName();
             $value = $type->getKey();
             $type = $type->getMorphClass();
         }
 
         return static::query()->whereMorphRelation(
-            relation: Relation::noConstraints(fn () => $this->{$relation}($foreignKey)),
+            relation: Relation::noConstraints(fn () => $this->{$relation}()),
             types: $type,
-            column: $foreignKey,
+            column: static::$customOwnerKey,
             operator: '=',
             value: $value
         )->latest()->get();
