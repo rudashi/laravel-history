@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Rudashi\LaravelHistory\Observers;
 
+use DateTimeInterface;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\Eloquent\Model;
 use JsonException;
@@ -66,6 +67,11 @@ class HistoryObserver
             if (in_array($attribute, $exclude, true)) {
                 continue;
             }
+
+            if ($value instanceof DateTimeInterface) {
+                $value = (string) $model->getAttribute($attribute);
+            }
+
             $changed[] = [
                 'key' => $attribute,
                 'old' => $this->castAttribute($model->getRawOriginal($attribute)),
@@ -76,15 +82,16 @@ class HistoryObserver
         return $changed;
     }
 
-    private function castAttribute(mixed $attribute = null)
+    private function castAttribute(mixed $value = null)
     {
-        if (! is_string($attribute)) {
-            return $attribute;
+        if (! is_string($value)) {
+            return $value;
         }
+
         try {
-            return json_decode($attribute, false, 512, JSON_THROW_ON_ERROR);
+            return json_decode($value, false, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException) {
-            return $attribute;
+            return $value;
         }
     }
 }
