@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Rudashi\LaravelHistory\Models\History;
 
 /**
- * @property Collection|History[] $history
+ * @property Collection<History>|History[] $history
+ *
+ * @mixin \Illuminate\Database\Eloquent\Model
  */
 interface HasHistoryInterface
 {

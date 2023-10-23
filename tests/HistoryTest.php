@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Rudashi\LaravelHistory\Tests;
 
 use Illuminate\Auth\Events\Login;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,7 +27,7 @@ class HistoryTest extends TestCase
     use CreatesApplication;
     use LazilyRefreshDatabase;
 
-    private FakeUser $user;
+    private FakeUser|Authenticatable $user;
 
     protected function refreshInMemoryDatabase(): void
     {
@@ -73,11 +74,12 @@ class HistoryTest extends TestCase
         $message = $this->createModel();
         $history = $message->history->first();
 
-        self::assertEquals($message->getKey(), $history->model_id);
-        self::assertEquals(MessageSoftDelete::class, $history->model_type);
+        self::assertInstanceOf(History::class, $history);
+        self::assertEquals($message->getKey(), $history->getAttribute('model_id'));
+        self::assertEquals(MessageSoftDelete::class, $history->getAttribute('model_type'));
 
-        self::assertEquals($this->user->getKey(), $history->user_id);
-        self::assertEquals(FakeUser::class, $history->user_type);
+        self::assertEquals($this->user->getKey(), $history->getAttribute('user_id'));
+        self::assertEquals(FakeUser::class, $history->getAttribute('user_type'));
 
         self::assertNotNull($history->model);
         self::assertInstanceOf(MessageSoftDelete::class, $history->model);
@@ -89,49 +91,55 @@ class HistoryTest extends TestCase
     public function test_model_has_history(): void
     {
         $message = $this->createModel();
-        /** @var History $history */
         $history = $message->history->first();
 
         self::assertCount(1, $message->history);
-        self::assertEquals('created', $history->action);
-        self::assertIsArray($history->meta);
-        self::assertCount(1, $history->meta);
-        self::assertEquals([['key' => 'title', 'old' => null, 'new' => 'title at creating']], $history->meta);
-        self::assertEquals($this->user->getKey(), $history->user_id);
-        self::assertEquals(FakeUser::class, $history->user_type);
+        self::assertInstanceOf(History::class, $history);
+        self::assertEquals('created', $history->getAttribute('action'));
+        self::assertIsArray($history->getAttribute('meta'));
+        self::assertCount(1, $history->getAttribute('meta'));
+        self::assertEquals([['key' => 'title', 'old' => null, 'new' => 'title at creating']], $history->getAttribute('meta'));
+        self::assertEquals($this->user->getKey(), $history->getAttribute('user_id'));
+        self::assertEquals(FakeUser::class, $history->getAttribute('user_type'));
     }
 
     public function test_history_register_create_and_delete_model(): void
     {
-        $message = $this->createAndRemoveModel(Message::class);
+        $message = $this->createModel(Message::class);
+        $message->delete();
+        $message->refresh();
+
         $history = History::query()->whereMorphedTo('model', $message)->get();
-        /** @var History $deleted */
+        $created = $history->get(0);
         $deleted = $history->get(1);
 
         self::assertCount(2, $history);
 
-        self::assertEquals('created', $message->history->get(0)->action);
-        self::assertEquals('deleted', $deleted->action);
-        self::assertIsArray($deleted->meta);
-        self::assertCount(0, $deleted->meta);
-        self::assertEquals($this->user->getKey(), $deleted->user_id);
-        self::assertEquals(FakeUser::class, $deleted->user_type);
+        self::assertInstanceOf(History::class, $created);
+        self::assertInstanceOf(History::class, $deleted);
+        self::assertEquals('created', $created->getAttribute('action'));
+        self::assertEquals('deleted', $deleted->getAttribute('action'));
+        self::assertIsArray($deleted->getAttribute('meta'));
+        self::assertCount(0, $deleted->getAttribute('meta'));
+        self::assertEquals($this->user->getKey(), $deleted->getAttribute('user_id'));
+        self::assertEquals(FakeUser::class, $deleted->getAttribute('user_type'));
     }
 
     public function test_history_register_create_and_soft_delete_model(): void
     {
         $message = $this->createAndRemoveModel();
-        /** @var History $history */
         $history = $message->history->get(1);
 
         self::assertCount(2, $message->history);
 
-        self::assertEquals('created', $message->history->get(0)->action);
-        self::assertEquals('deleted', $history->action);
-        self::assertIsArray($history->meta);
-        self::assertCount(0, $history->meta);
-        self::assertEquals($this->user->getKey(), $history->user_id);
-        self::assertEquals(FakeUser::class, $history->user_type);
+        self::assertInstanceOf(History::class, $history);
+        self::assertInstanceOf(Message::class, $message);
+        self::assertEquals('created', $message->history->get(0)->getAttribute('action'));
+        self::assertEquals('deleted', $history->getAttribute('action'));
+        self::assertIsArray($history->getAttribute('meta'));
+        self::assertCount(0, $history->getAttribute('meta'));
+        self::assertEquals($this->user->getKey(), $history->getAttribute('user_id'));
+        self::assertEquals(FakeUser::class, $history->getAttribute('user_type'));
     }
 
     public function test_history_register_model_restore(): void
@@ -140,17 +148,18 @@ class HistoryTest extends TestCase
         $message->restore();
         $message->refresh();
 
-        /** @var History $history */
         $history = $message->history->get(2);
 
         self::assertCount(3, $message->history);
-        self::assertEquals('created', $message->history->get(0)->action);
-        self::assertEquals('deleted', $message->history->get(1)->action);
-        self::assertEquals('restored', $history->action);
-        self::assertIsArray($history->meta);
-        self::assertCount(0, $history->meta);
-        self::assertEquals($this->user->getKey(), $history->user_id);
-        self::assertEquals(FakeUser::class, $history->user_type);
+        self::assertInstanceOf(History::class, $history);
+        self::assertInstanceOf(Message::class, $message);
+        self::assertEquals('created', $message->history->get(0)->getAttribute('action'));
+        self::assertEquals('deleted', $message->history->get(1)->getAttribute('action'));
+        self::assertEquals('restored', $history->getAttribute('action'));
+        self::assertIsArray($history->getAttribute('meta'));
+        self::assertCount(0, $history->getAttribute('meta'));
+        self::assertEquals($this->user->getKey(), $history->getAttribute('user_id'));
+        self::assertEquals(FakeUser::class, $history->getAttribute('user_type'));
     }
 
     public function test_can_disable_history_for_model(): void
@@ -159,7 +168,6 @@ class HistoryTest extends TestCase
         $message->disableHistory();
         $message->save();
 
-        /** @var History $history */
         self::assertCount(0, $message->history);
     }
 
@@ -171,16 +179,18 @@ class HistoryTest extends TestCase
         ]);
         $message->refresh();
 
-        /** @var History $history */
+        $created = $message->history->get(0);
         $history = $message->history->get(1);
 
         self::assertCount(2, $message->history);
-        self::assertEquals('created', $message->history->get(0)->action);
-        self::assertEquals('updated', $history->action);
-        self::assertIsArray($history->meta);
-        self::assertEquals([['key' => 'title', 'old' => 'title at creating', 'new' => 'updating title']], $history->meta);
-        self::assertEquals($this->user->getKey(), $history->user_id);
-        self::assertEquals(FakeUser::class, $history->user_type);
+        self::assertInstanceOf(History::class, $history);
+        self::assertInstanceOf(History::class, $created);
+        self::assertEquals('created', $created->getAttribute('action'));
+        self::assertEquals('updated', $history->getAttribute('action'));
+        self::assertIsArray($history->getAttribute('meta'));
+        self::assertEquals([['key' => 'title', 'old' => 'title at creating', 'new' => 'updating title']], $history->getAttribute('meta'));
+        self::assertEquals($this->user->getKey(), $history->getAttribute('user_id'));
+        self::assertEquals(FakeUser::class, $history->getAttribute('user_type'));
     }
 
     public function test_history_not_register_excluded_attribute(): void
@@ -192,22 +202,22 @@ class HistoryTest extends TestCase
         ]);
         $message->refresh();
 
-        /** @var History $created */
         $created = $message->history->get(0);
-        /** @var History $updated */
         $updated = $message->history->get(1);
 
         self::assertCount(2, $message->history);
 
-        self::assertEquals('created', $created->action);
-        self::assertIsArray($created->meta);
-        self::assertCount(0, $created->meta);
-        self::assertEquals([], $created->meta);
+        self::assertInstanceOf(History::class, $created);
+        self::assertEquals('created', $created->getAttribute('action'));
+        self::assertIsArray($created->getAttribute('meta'));
+        self::assertCount(0, $created->getAttribute('meta'));
+        self::assertEquals([], $created->getAttribute('meta'));
 
-        self::assertEquals('updated', $updated->action);
-        self::assertIsArray($updated->meta);
-        self::assertCount(1, $updated->meta);
-        self::assertEquals([['key' => 'description', 'old' => null, 'new' => 'updating desc']], $updated->meta);
+        self::assertInstanceOf(History::class, $updated);
+        self::assertEquals('updated', $updated->getAttribute('action'));
+        self::assertIsArray($updated->getAttribute('meta'));
+        self::assertCount(1, $updated->getAttribute('meta'));
+        self::assertEquals([['key' => 'description', 'old' => null, 'new' => 'updating desc']], $updated->getAttribute('meta'));
     }
 
     public function test_history_not_register_excluded_events(): void
@@ -218,34 +228,38 @@ class HistoryTest extends TestCase
         ]);
         $message->refresh();
 
-        /** @var History $history */
         $history = $message->history->first();
 
         self::assertCount(1, $message->history);
-        self::assertEquals('updated', $history->action);
-        self::assertIsArray($history->meta);
-        self::assertCount(1, $history->meta);
-        self::assertEquals([['key' => 'description', 'old' => null, 'new' => 'updating desc']], $history->meta);
-        self::assertEquals($this->user->getKey(), $history->user_id);
-        self::assertEquals(FakeUser::class, $history->user_type);
+        self::assertInstanceOf(History::class, $history);
+        self::assertEquals('updated', $history->getAttribute('action'));
+        self::assertIsArray($history->getAttribute('meta'));
+        self::assertCount(1, $history->getAttribute('meta'));
+        self::assertEquals([['key' => 'description', 'old' => null, 'new' => 'updating desc']], $history->getAttribute('meta'));
+        self::assertEquals($this->user->getKey(), $history->getAttribute('user_id'));
+        self::assertEquals(FakeUser::class, $history->getAttribute('user_type'));
     }
 
     public function test_user_has_registered_history_action(): void
     {
         $message = $this->createModel();
 
-        $user_history = $this->user->operations->first();
+        $operations = $this->user->getAttribute('operations');
+        $user_history = $operations->first();
 
-        self::assertEquals(1, $this->user->operations->count());
-        self::assertEquals('created', $user_history->action);
-        self::assertEquals([['key' => 'title', 'old' => null, 'new' => 'title at creating']], $user_history->meta);
-        self::assertEquals($message->getKey(), $user_history->model_id);
-        self::assertEquals(MessageSoftDelete::class, $user_history->model_type);
+        self::assertEquals(1, $operations->count());
+        self::assertInstanceOf(History::class, $user_history);
+        self::assertEquals('created', $user_history->getAttribute('action'));
+        self::assertEquals([['key' => 'title', 'old' => null, 'new' => 'title at creating']], $user_history->getAttribute('meta'));
+        self::assertEquals($message->getKey(), $user_history->getAttribute('model_id'));
+        self::assertEquals(MessageSoftDelete::class, $user_history->getAttribute('model_type'));
     }
 
     public function test_user_has_no_registered_history_actions(): void
     {
-        self::assertEquals(0, $this->createUser()->operations->count());
+        $this->createUser();
+
+        self::assertEquals(0, $this->user->getAttribute('operations')->count());
     }
 
     public function test_get_model_history(): void
@@ -254,11 +268,16 @@ class HistoryTest extends TestCase
         $message->update(['title' => 'updating title']);
         $history = History::ofModel($message);
 
+        $created = $history->get(0);
+        $updated = $history->get(1);
+
         self::assertCount(2, $history);
-        self::assertEquals('created', $history->get(0)->action);
-        self::assertEquals('updated', $history->get(1)->action);
-        self::assertEquals($message->getAttribute('id'), $history->get(0)->model_id);
-        self::assertEquals($message->getAttribute('id'), $history->get(1)->model_id);
+        self::assertInstanceOf(History::class, $created);
+        self::assertInstanceOf(History::class, $updated);
+        self::assertEquals('created', $created->getAttribute('action'));
+        self::assertEquals('updated', $updated->getAttribute('action'));
+        self::assertEquals($message->getAttribute('id'), $created->getAttribute('model_id'));
+        self::assertEquals($message->getAttribute('id'), $updated->getAttribute('model_id'));
     }
 
     public function test_get_user_history(): void
@@ -268,10 +287,10 @@ class HistoryTest extends TestCase
         $history = History::ofUser($this->user::class, $this->user->getAttribute('id'));
 
         self::assertCount(2, $history);
-        self::assertEquals('created', $history->get(0)->action);
-        self::assertEquals('updated', $history->get(1)->action);
-        self::assertEquals($this->user->getAttribute('id'), $history->get(0)->user_id);
-        self::assertEquals($this->user->getAttribute('id'), $history->get(1)->user_id);
+        self::assertEquals('created', $history->get(0)->getAttribute('action'));
+        self::assertEquals('updated', $history->get(1)->getAttribute('action'));
+        self::assertEquals($this->user->getAttribute('id'), $history->get(0)->getAttribute('user_id'));
+        self::assertEquals($this->user->getAttribute('id'), $history->get(1)->getAttribute('user_id'));
     }
 
     public function test_can_register_authentication_event(): void
@@ -291,14 +310,15 @@ class HistoryTest extends TestCase
         Auth::login($this->user);
 
         $history = History::ofUser($this->user);
-        $login = $history->get(0);
+        $login = $history->first();
 
         self::assertCount(1, $history);
-        self::assertEquals('Login', $login->action);
-        self::assertIsArray($login->meta);
-        self::assertCount(0, $login->meta);
-        self::assertNull($login->model_id);
-        self::assertNull($login->model_type);
+        self::assertInstanceOf(History::class, $login);
+        self::assertEquals('Login', $login->getAttribute('action'));
+        self::assertIsArray($login->getAttribute('meta'));
+        self::assertCount(0, $login->getAttribute('meta'));
+        self::assertNull($login->getAttribute('model_id'));
+        self::assertNull($login->getAttribute('model_type'));
     }
 
     public function test_can_register_logout_event(): void
@@ -308,20 +328,22 @@ class HistoryTest extends TestCase
         Auth::logout();
 
         $history = History::ofUser($this->user);
-        $login = $history->get(0);
+        $login = $history->first();
 
         self::assertCount(1, $history);
-        self::assertEquals('Logout', $login->action);
-        self::assertIsArray($login->meta);
-        self::assertCount(0, $login->meta);
-        self::assertNull($login->model_id);
-        self::assertNull($login->model_type);
+        self::assertInstanceOf(History::class, $login);
+        self::assertEquals('Logout', $login->getAttribute('action'));
+        self::assertIsArray($login->getAttribute('meta'));
+        self::assertCount(0, $login->getAttribute('meta'));
+        self::assertNull($login->getAttribute('model_id'));
+        self::assertNull($login->getAttribute('model_type'));
     }
 
-    private function createAndRemoveModel(string $class = MessageSoftDelete::class): Message|MessageSoftDelete
+    private function createAndRemoveModel(string $class = MessageSoftDelete::class): MessageSoftDelete
     {
         $message = $this->createModel($class);
         self::assertCount(1, $message->history);
+        self::assertInstanceOf(MessageSoftDelete::class, $message);
 
         $message->delete();
         $message->refresh();
@@ -336,7 +358,7 @@ class HistoryTest extends TestCase
         ]);
     }
 
-    private function createUser(): FakeUser|Model
+    private function createUser(): FakeUser|Model|Authenticatable
     {
         return FakeUser::query()->create(['name' => 'Monica', 'password' => 'secret']);
     }

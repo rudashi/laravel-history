@@ -20,6 +20,8 @@ use Rudashi\LaravelHistory\Models\Contracts\HistoryInterface;
  * @property string user_type
  * @property User user
  * @property Model model
+ *
+ * @phpstan-consistent-constructor
  */
 class History extends Model implements HistoryInterface
 {

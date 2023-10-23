@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Rudashi\LaravelHistory\Models\History;
 
 /**
- * @property Collection|History[] $operations
+ * @property Collection<History> $operations
  */
 trait HasOperations
 {
