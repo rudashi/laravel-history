@@ -13,13 +13,13 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Rudashi\LaravelHistory\Models\Contracts\HistoryInterface;
 
 /**
- * @property Carbon created_at
- * @property string action
- * @property array meta
- * @property int user_id
- * @property string user_type
- * @property User user
- * @property Model model
+ * @property Carbon $created_at
+ * @property string $action
+ * @property array $meta
+ * @property int $user_id
+ * @property string $user_type
+ * @property User $user
+ * @property Model $model
  *
  * @phpstan-consistent-constructor
  */
@@ -77,6 +77,21 @@ class History extends Model implements HistoryInterface
             name: __FUNCTION__,
             ownerKey: static::$customOwnerKey
         );
+    }
+
+    public function saveModel(Model|null $model = null): static
+    {
+        $this->model()->associate($model);
+
+        return $this;
+    }
+
+
+    public function saveUser(Model|null $model = null): static
+    {
+        $this->user()->associate($model);
+
+        return $this;
     }
 
     private function ofMorph(string $relation, Model|string $type, mixed $value = null): Collection
