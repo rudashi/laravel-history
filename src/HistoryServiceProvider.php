@@ -26,8 +26,10 @@ class HistoryServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/config/config.php', 'laravel-history');
 
+        $dispatcher = $this->getDispatcher();
+
         foreach (array_filter($this->getListenEvents()) as $class => $listener) {
-            $this->getDispatcher()->listen($class, $listener);
+            $dispatcher->listen($class, $listener);
         }
     }
 
