@@ -36,7 +36,7 @@ class HistoryTest extends TestCase
         $this->artisan('migrate', [
             '--path' => __DIR__ . '/../src/database/migrations/',
             '--realpath' => __DIR__ . '/../src/database/migrations/',
-        ])->run();
+        ]);
 
         Schema::create('users', static function (Blueprint $table) {
             $table->increments('id');
