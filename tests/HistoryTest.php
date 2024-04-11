@@ -6,66 +6,50 @@ namespace Rudashi\LaravelHistory\Tests;
 
 use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Rudashi\LaravelHistory\Contracts\HasHistoryInterface;
-use Rudashi\LaravelHistory\HistoryServiceProvider;
 use Rudashi\LaravelHistory\Listeners\AuthenticationListeners;
 use Rudashi\LaravelHistory\Models\History;
 use Rudashi\LaravelHistory\Traits\HasHistory;
-use Tests\CreatesApplication;
+use Rudashi\LaravelHistory\Traits\HasOperations;
 
 class HistoryTest extends TestCase
 {
-    use CreatesApplication;
     use LazilyRefreshDatabase;
 
     private FakeUser|Authenticatable $user;
 
-    protected function refreshInMemoryDatabase(): void
+    protected function afterRefreshingDatabase(): void
     {
-        $this->app->register(HistoryServiceProvider::class);
-
-        $this->artisan('migrate', [
-            '--path' => __DIR__ . '/../src/database/migrations/',
-            '--realpath' => __DIR__ . '/../src/database/migrations/',
-        ]);
-
-        Schema::create('users', static function (Blueprint $table) {
+        Schema::create('__users', static function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('password');
         });
 
-        Schema::create('messages', static function (Blueprint $table) {
+        Schema::create('__messages', static function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');
             $table->string('description')->nullable();
             $table->softDeletes();
         });
 
-        $this->app[Kernel::class]->setArtisan(null);
-
         $this->user = $this->createUser();
         $this->actingAs($this->user);
     }
 
-    protected function usingInMemoryDatabase(): bool
-    {
-        return true;
-    }
-
     public function test_database(): void
     {
-        $this->assertDatabaseHas('users', ['name' => 'Monica']);
-        $this->assertDatabaseMissing('messages', ['title' => '']);
+        $this->assertDatabaseHas('__users', ['name' => 'Monica']);
+        $this->assertDatabaseMissing('__messages', ['title' => '']);
         $this->assertDatabaseMissing('model_histories', ['action' => '']);
     }
 
@@ -364,12 +348,21 @@ class HistoryTest extends TestCase
     }
 }
 
+class FakeUser extends User
+{
+    use HasOperations;
+
+    public $timestamps = false;
+    protected $guarded = [];
+    protected $table = '__users';
+}
+
 class Message extends Model implements HasHistoryInterface
 {
     use HasHistory;
 
     public $timestamps = false;
-    protected $table = 'messages';
+    protected $table = '__messages';
     protected $fillable = ['title', 'description'];
 }
 
