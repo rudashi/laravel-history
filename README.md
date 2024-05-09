@@ -10,7 +10,7 @@ Package provides easy to use functions to log the activities of the users of you
 ## General System Requirements
 
 - [PHP ^8.0](http://php.net/)
-- [Laravel ^10.0](https://github.com/laravel/framework)
+- [Laravel ^11.0](https://github.com/laravel/framework)
 
 ## Quick Installation
 
