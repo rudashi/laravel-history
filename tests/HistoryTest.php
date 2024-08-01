@@ -311,7 +311,7 @@ class HistoryTest extends TestCase
         $this->actingAs($this->user);
         Auth::logout();
 
-        $history = History::ofUser($this->user::class);
+        $history = History::ofUser($this->user);
         $login = $history->first();
 
         self::assertCount(1, $history);
