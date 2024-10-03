@@ -86,7 +86,6 @@ class History extends Model implements HistoryInterface
         return $this;
     }
 
-
     public function saveUser(Model|null $model = null): static
     {
         $this->user()->associate($model);
