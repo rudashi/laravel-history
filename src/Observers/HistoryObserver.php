@@ -47,6 +47,9 @@ class HistoryObserver
         $this->saveHistory($model, __FUNCTION__, $this->setMeta($model));
     }
 
+    /**
+     * @param array<int, array{key: string, old: mixed, new: mixed}>|null $meta
+     */
     private function saveHistory(HasHistoryInterface|Model $model, string $action, array $meta = null): void
     {
         if (in_array($action, $model->excludedHistoryModelEvents(), true) === false) {
@@ -58,7 +61,12 @@ class HistoryObserver
         }
     }
 
-    private function setMeta(HasHistoryInterface $model, array $exclude = null): array
+    /**
+     * @param string[]|null $exclude
+     *
+     * @return array<int, array{key: string, old: mixed, new: mixed}>
+     */
+    private function setMeta(HasHistoryInterface $model, ?array $exclude = null): array
     {
         $changed = [];
         $exclude = $exclude ?? $model->excludedHistoryAttributes();
@@ -82,7 +90,7 @@ class HistoryObserver
         return $changed;
     }
 
-    private function castAttribute(mixed $value = null)
+    private function castAttribute(mixed $value = null): mixed
     {
         if (! is_string($value)) {
             return $value;

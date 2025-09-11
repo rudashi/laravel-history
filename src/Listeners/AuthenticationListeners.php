@@ -8,7 +8,7 @@ use Rudashi\LaravelHistory\Models\History;
 
 class AuthenticationListeners
 {
-    public function handle($event): void
+    public function handle(mixed $event): void
     {
         if ($event->user && method_exists($event->user, 'operations')) {
             $event->user->operations()->save(

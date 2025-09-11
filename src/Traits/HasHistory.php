@@ -15,11 +15,9 @@ trait HasHistory
         static::observe(HistoryObserver::class);
     }
 
-    public function disableHistory(): self
+    public function disableHistory(): void
     {
         $this::flushEventListeners();
-
-        return $this;
     }
 
     public function history(): MorphMany

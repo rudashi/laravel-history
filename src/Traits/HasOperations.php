@@ -4,17 +4,22 @@ declare(strict_types=1);
 
 namespace Rudashi\LaravelHistory\Traits;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Rudashi\LaravelHistory\Models\History;
 
 /**
- * @property Collection<History> $operations
+ * @property \Illuminate\Database\Eloquent\Collection<int, \Rudashi\LaravelHistory\Models\History> $operations
  */
 trait HasOperations
 {
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<\Rudashi\LaravelHistory\Models\History, \Illuminate\Database\Eloquent\Model>
+     */
     public function operations(): MorphMany
     {
-        return $this->morphMany(History::class, 'user');
+        return $this->morphMany(
+            related: History::class,
+            name: 'user',
+        );
     }
 }

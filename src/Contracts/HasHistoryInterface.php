@@ -7,14 +7,17 @@ namespace Rudashi\LaravelHistory\Contracts;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
- * @property \Illuminate\Database\Eloquent\Collection<\Rudashi\LaravelHistory\Models\History> $history
+ * @property \Illuminate\Database\Eloquent\Collection<int, \Rudashi\LaravelHistory\Models\History> $history
  *
  * @mixin \Illuminate\Database\Eloquent\Model
  */
 interface HasHistoryInterface
 {
-    public function disableHistory();
+    public function disableHistory(): void;
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<\Rudashi\LaravelHistory\Models\History, \Illuminate\Database\Eloquent\Model>
+     */
     public function history(): MorphMany;
 
     public function getLocalKeyName(): string;

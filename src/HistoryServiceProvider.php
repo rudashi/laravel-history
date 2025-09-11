@@ -38,6 +38,9 @@ class HistoryServiceProvider extends ServiceProvider
         return $this->app['events'];
     }
 
+    /**
+     * @return array<class-string, class-string|bool>
+     */
     private function getListenEvents(): array
     {
         return $this->app['config']->get('laravel-history.events', []);
