@@ -11,14 +11,17 @@ use JsonException;
 use Rudashi\LaravelHistory\Contracts\HasHistoryInterface;
 use Rudashi\LaravelHistory\Models\History;
 
-class HistoryObserver
+readonly class HistoryObserver
 {
     public function __construct(
-        private readonly History $history,
-        private readonly Guard $auth
+        private History $history,
+        private Guard $auth
     ) {
     }
 
+    /**
+     * @param \Rudashi\LaravelHistory\Contracts\HasHistoryInterface<\Illuminate\Database\Eloquent\Model> $model
+     */
     public function created(HasHistoryInterface $model): void
     {
         $this->saveHistory(
@@ -28,16 +31,26 @@ class HistoryObserver
         );
     }
 
+    /**
+     * @param \Rudashi\LaravelHistory\Contracts\HasHistoryInterface<\Illuminate\Database\Eloquent\Model> $model
+     * @return void
+     */
     public function deleted(HasHistoryInterface $model): void
     {
         $this->saveHistory($model, __FUNCTION__, $this->setMeta($model));
     }
 
+    /**
+     * @param \Rudashi\LaravelHistory\Contracts\HasHistoryInterface<\Illuminate\Database\Eloquent\Model> $model
+     */
     public function restored(HasHistoryInterface $model): void
     {
         $this->saveHistory($model, __FUNCTION__, $this->setMeta($model));
     }
 
+    /**
+     * @param \Rudashi\LaravelHistory\Contracts\HasHistoryInterface<\Illuminate\Database\Eloquent\Model> $model
+     */
     public function updated(HasHistoryInterface $model): void
     {
         if (method_exists($model, 'getDeletedAtColumn') && $model->wasChanged($model->getDeletedAtColumn())) {
@@ -48,6 +61,7 @@ class HistoryObserver
     }
 
     /**
+     * @param \Rudashi\LaravelHistory\Contracts\HasHistoryInterface<\Illuminate\Database\Eloquent\Model>|\Illuminate\Database\Eloquent\Model $model
      * @param array<int, array{key: string, old: mixed, new: mixed}>|null $meta
      */
     private function saveHistory(HasHistoryInterface|Model $model, string $action, array $meta = null): void
@@ -62,6 +76,7 @@ class HistoryObserver
     }
 
     /**
+     * @param \Rudashi\LaravelHistory\Contracts\HasHistoryInterface<\Illuminate\Database\Eloquent\Model> $model
      * @param string[]|null $exclude
      *
      * @return array<int, array{key: string, old: mixed, new: mixed}>

@@ -7,6 +7,8 @@ namespace Rudashi\LaravelHistory\Contracts;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+
  * @property \Illuminate\Database\Eloquent\Collection<int, \Rudashi\LaravelHistory\Models\History> $history
  *
  * @mixin \Illuminate\Database\Eloquent\Model
@@ -16,7 +18,7 @@ interface HasHistoryInterface
     public function disableHistory(): void;
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<\Rudashi\LaravelHistory\Models\History, \Illuminate\Database\Eloquent\Model>
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany<\Rudashi\LaravelHistory\Models\History, TModel>
      */
     public function history(): MorphMany;
 
