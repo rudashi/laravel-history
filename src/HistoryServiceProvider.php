@@ -28,21 +28,21 @@ class HistoryServiceProvider extends ServiceProvider
 
         $dispatcher = $this->getDispatcher();
 
-        foreach (array_filter($this->getListenEvents()) as $class => $listener) {
+        foreach ($this->getListenEvents() as $class => $listener) {
             $dispatcher->listen($class, $listener);
         }
     }
 
     private function getDispatcher(): Dispatcher
     {
-        return $this->app['events'];
+        return resolve('events');
     }
 
     /**
-     * @return array<class-string, class-string|bool>
+     * @return array<class-string, class-string>
      */
     private function getListenEvents(): array
     {
-        return $this->app['config']->get('laravel-history.events', []);
+        return array_filter(config('laravel-history.events', []));
     }
 }

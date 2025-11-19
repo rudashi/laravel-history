@@ -66,6 +66,10 @@ readonly class HistoryObserver
      */
     private function saveHistory(HasHistoryInterface|Model $model, string $action, array $meta = null): void
     {
+        if (!$model instanceof HasHistoryInterface || !$model instanceof Model) {
+            return;
+        }
+
         if (in_array($action, $model->excludedHistoryModelEvents(), true) === false) {
             $this->history->setCustomOwnerKey($model->getLocalKeyName())
                 ->fill(['action' => $action, 'meta' => $meta])

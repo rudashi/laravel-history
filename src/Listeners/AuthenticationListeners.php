@@ -10,7 +10,9 @@ class AuthenticationListeners
 {
     public function handle(mixed $event): void
     {
-        if ($event->user && method_exists($event->user, 'operations')) {
+        $user = $event->user ?? null;
+
+        if (is_object($user) && method_exists($user, 'operations')) {
             $event->user->operations()->save(
                 new History([
                     'action' => class_basename($event),
