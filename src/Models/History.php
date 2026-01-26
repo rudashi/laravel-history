@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Rudashi\LaravelHistory\Models\Contracts\HistoryInterface;
 
 /**
- * @property \Carbon\Carbon $created_at
+ * @property \Carbon\CarbonInterface $created_at
  * @property string $action
  * @property array<int, array{key: string, old: mixed, new: mixed}> $meta
  * @property int $user_id
