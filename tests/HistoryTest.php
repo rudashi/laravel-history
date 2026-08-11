@@ -55,6 +55,8 @@ class HistoryTest extends TestCase
 
     public function test_history_has_relationships(): void
     {
+        History::$userOwnerKey = 'id';
+
         $message = $this->createModel();
         $history = $message->history->first();
 
