@@ -12,6 +12,12 @@ trait HasHistory
 {
     public static function bootHasHistory(): void
     {
+        if (method_exists(static::class, 'whenBooted')) {
+            static::whenBooted(static fn () => static::observe(HistoryObserver::class));
+
+            return;
+        }
+        
         static::observe(HistoryObserver::class);
     }
 
