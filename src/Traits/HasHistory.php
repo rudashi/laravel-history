@@ -17,7 +17,7 @@ trait HasHistory
 
             return;
         }
-        
+
         static::observe(HistoryObserver::class);
     }
 
