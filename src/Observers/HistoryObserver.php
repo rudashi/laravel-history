@@ -88,7 +88,7 @@ readonly class HistoryObserver
     private function setMeta(HasHistoryInterface $model, ?array $exclude = null): array
     {
         $changed = [];
-        $exclude = $exclude ?? $model->excludedHistoryAttributes();
+        $exclude ??= $model->excludedHistoryAttributes();
 
         foreach ($model->getDirty() as $attribute => $value) {
             if (in_array($attribute, $exclude, true)) {

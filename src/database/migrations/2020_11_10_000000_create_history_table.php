@@ -10,7 +10,7 @@ return new class () extends Migration {
     public function up(): void
     {
         try {
-            Schema::create(config('laravel-history.table'), static function (Blueprint $table) {
+            Schema::create(config('laravel-history.table'), static function (Blueprint $table): void {
                 $table->bigIncrements('id');
                 $table->timestamp('created_at')->nullable();
                 $table->uuidMorphs('model');

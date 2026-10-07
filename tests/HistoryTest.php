@@ -29,13 +29,13 @@ class HistoryTest extends TestCase
 
     protected function afterRefreshingDatabase(): void
     {
-        Schema::create('__users', static function (Blueprint $table) {
+        Schema::create('__users', static function (Blueprint $table): void {
             $table->increments('id');
             $table->string('name');
             $table->string('password');
         });
 
-        Schema::create('__messages', static function (Blueprint $table) {
+        Schema::create('__messages', static function (Blueprint $table): void {
             $table->increments('id');
             $table->string('title');
             $table->string('description')->nullable();

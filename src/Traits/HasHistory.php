@@ -12,6 +12,7 @@ trait HasHistory
 {
     public static function bootHasHistory(): void
     {
+        // whenBooted() exists only in newer Laravel versions, keep fallback for older ones.
         if (method_exists(static::class, 'whenBooted')) {
             static::whenBooted(static fn () => static::observe(HistoryObserver::class));
 
