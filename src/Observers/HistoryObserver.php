@@ -33,7 +33,6 @@ readonly class HistoryObserver
 
     /**
      * @param \Rudashi\LaravelHistory\Contracts\HasHistoryInterface<\Illuminate\Database\Eloquent\Model> $model
-     * @return void
      */
     public function deleted(HasHistoryInterface $model): void
     {
