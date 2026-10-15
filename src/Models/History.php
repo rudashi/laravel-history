@@ -99,7 +99,7 @@ class History extends Model implements HistoryInterface
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, \Rudashi\LaravelHistory\Models\History>
+     * @return \Illuminate\Database\Eloquent\Collection<int, static>
      */
     private function ofMorph(string $relation, Model|string $type, mixed $value = null): Collection
     {
